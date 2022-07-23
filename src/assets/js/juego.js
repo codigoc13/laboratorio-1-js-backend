@@ -9,6 +9,15 @@ let baraja = []
 const tipos = ['C', 'D', 'H', 'S']
 const letras = ['J', 'Q', 'K', 'A']
 
+let puntosJugador = 0
+let puntosComputadora = 0
+
+// Referencia del HTML
+const btnPedir = document.querySelector('#btn-pedir')
+const smallPuntajeJugador = document.querySelector('small')
+const divJugadorCartas = document.querySelector('#jugador-cartas')
+// console.log(btnPedir)
+
 // Esta función crea la baraja 'barajeada'
 const crearBaraja = () => {
   // Se puebla el arreglo con los número y tipos de la baraja
@@ -28,7 +37,7 @@ const crearBaraja = () => {
   // Se barajea la baraja
   baraja = _.shuffle(baraja)
 
-  console.log(baraja)
+  // console.log(baraja)
 }
 
 crearBaraja()
@@ -40,8 +49,8 @@ const pedirCarta = () => {
   }
   const index = Math.floor(Math.random() * 51)
   const carta = baraja.splice(index, 1)[0]
-  console.log({ carta })
-  console.log(baraja)
+  // console.log({ carta })
+  // console.log(baraja)
   return carta
 }
 
@@ -61,5 +70,29 @@ const valorCarta = (carta) => {
   const valor = carta.substring(0, carta.length - 1)
   return isNaN(valor) ? (valor === 'A' ? 11 : 10) : Number(valor)
 }
-const valor = valorCarta(pedirCarta())
-console.log(valor)
+// const valor = valorCarta(pedirCarta())
+// console.log(valor)
+
+// Eventos
+btnPedir.addEventListener('click', () => {
+  // console.log('click')
+  const carta = pedirCarta()
+  // console.log({ carta })
+  puntosJugador += valorCarta(carta)
+  smallPuntajeJugador.innerText = puntosJugador
+  console.log(smallPuntajeJugador.innerText)
+
+  // <img class="carta" src="assets/cartas/10H.png" alt="" />
+  const imgCarta = document.createElement('img')
+  imgCarta.src = `assets/cartas/${carta}.png`
+  imgCarta.classList.add('carta')
+  divJugadorCartas.append(imgCarta)
+
+  if (puntosJugador > 21) {
+    btnPedir.disabled = true
+    console.warn('Lo siento, ya perdiste')
+  } else if (puntosJugador === 21) {
+    btnPedir.disabled = true
+    console.warn('21, Genial')
+  }
+})
