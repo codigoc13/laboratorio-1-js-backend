@@ -14,9 +14,10 @@ let puntosComputadora = 0
 
 // Referencia del HTML
 const btnPedir = document.querySelector('#btn-pedir')
-const smallPuntajeJugador = document.querySelector('small')
+const btnDetener = document.querySelector('#btn-detener')
+const puntosHTML = document.querySelectorAll('small')
 const divJugadorCartas = document.querySelector('#jugador-cartas')
-// console.log(btnPedir)
+const divComputadoraCartas = document.querySelector('#computadora-cartas')
 
 // Esta función crea la baraja 'barajeada'
 const crearBaraja = () => {
@@ -32,57 +33,60 @@ const crearBaraja = () => {
       baraja.push(letra + tipo)
     }
   }
-  // console.log(baraja) //Descomentar si se quiere ver la baraja ordenada
 
   // Se barajea la baraja
   baraja = _.shuffle(baraja)
-
-  // console.log(baraja)
 }
 
 crearBaraja()
 
+/**
+ *  Se soluciona el error del desborde del arreglo al eliminar cartas del mismo
+ *  y no modificar el número máximo posible del random
+ */
 // Esta función pide una carta
 const pedirCarta = () => {
-  if (baraja.length === 0) {
+  const barajaTamanio = baraja.length
+  if (barajaTamanio === 0) {
     throw 'No hay cartas en la baraja'
   }
-  const index = Math.floor(Math.random() * 51)
+  const index = Math.floor(Math.random() * barajaTamanio)
   const carta = baraja.splice(index, 1)[0]
-  // console.log({ carta })
-  // console.log(baraja)
   return carta
 }
 
-// pedirCarta()
-
+// Esta función obtiene el valor de la carta
 const valorCarta = (carta) => {
-  /*const valor = carta.substring(0, carta.length - 1)
-    let puntos = 0
-    if (isNaN(valor)) {
-      puntos = valor === 'A' ? 11 : 10
-    } else {
-      puntos = Number(valor)
-    }
-    console.log(puntos)
-    return puntos */
-
   const valor = carta.substring(0, carta.length - 1)
   return isNaN(valor) ? (valor === 'A' ? 11 : 10) : Number(valor)
 }
-// const valor = valorCarta(pedirCarta())
-// console.log(valor)
+
+// Turno de la computadora
+const turnoComputadora = (puntosMinimos) => {
+  do {
+    const carta = pedirCarta()
+    puntosComputadora += valorCarta(carta)
+    puntosHTML[1].innerText = puntosComputadora
+    // console.log(smallPuntajeJugador.innerText)
+
+    const imgCarta = document.createElement('img')
+    imgCarta.src = `assets/cartas/${carta}.png`
+    imgCarta.classList.add('carta')
+    divComputadoraCartas.append(imgCarta)
+
+    if (puntosMinimos > 21) {
+      break
+    }
+  } while (puntosComputadora <= puntosMinimos && puntosMinimos <= 21)
+}
 
 // Eventos
 btnPedir.addEventListener('click', () => {
-  // console.log('click')
   const carta = pedirCarta()
-  // console.log({ carta })
   puntosJugador += valorCarta(carta)
-  smallPuntajeJugador.innerText = puntosJugador
-  console.log(smallPuntajeJugador.innerText)
+  puntosHTML[0].innerText = puntosJugador
+  // console.log(smallPuntajeJugador.innerText)
 
-  // <img class="carta" src="assets/cartas/10H.png" alt="" />
   const imgCarta = document.createElement('img')
   imgCarta.src = `assets/cartas/${carta}.png`
   imgCarta.classList.add('carta')
@@ -90,9 +94,19 @@ btnPedir.addEventListener('click', () => {
 
   if (puntosJugador > 21) {
     btnPedir.disabled = true
+    btnDetener.disabled = true
     console.warn('Lo siento, ya perdiste')
+    turnoComputadora(puntosJugador)
   } else if (puntosJugador === 21) {
     btnPedir.disabled = true
+    btnDetener.disabled = true
     console.warn('21, Genial')
+    turnoComputadora(puntosJugador)
   }
+})
+
+btnDetener.addEventListener('click', () => {
+  btnPedir.disabled = true
+  btnDetener.disabled = true
+  turnoComputadora(puntosJugador)
 })
