@@ -5,7 +5,7 @@
   const tipos = ['C', 'D', 'H', 'S'],
     letras = ['J', 'Q', 'K', 'A']
 
-  const puntosJugadores = [] // El último jugador siempre será la computadora
+  let puntosJugadores = [] // El último jugador siempre será la computadora
 
   // Referencia del HTML
   const btnPedir = document.querySelector('#btn-pedir'),
@@ -15,10 +15,25 @@
     divCartasJugadores = document.querySelectorAll('.divCartas')
 
   const inicializarJuego = (numJugadores = 2) => {
+    console.clear()
     baraja = crearBaraja()
+
+    puntosJugadores = []
+
     for (let i = 0; i < numJugadores; i++) {
       puntosJugadores.push(0)
     }
+    puntosHTML.forEach((elem) => (elem.innerText = 0))
+    divCartasJugadores.forEach((elem) => (elem.innerHTML = ''))
+
+    btnPedir.disabled = false
+    btnDetener.disabled = false
+
+    // puntosJugador = 0
+    // puntosComputadora = 0
+    // divJugadorCartas.innerHTML = ''
+    // divComputadoraCartas.innerHTML = ''
+    // crearBaraja()
   }
 
   // Esta función crea la baraja 'barajeada'
@@ -67,18 +82,8 @@
     divCartasJugadores[turno].append(imgCarta)
   }
 
-  const turnoComputadora = (puntosMinimos) => {
-    let puntosComputadora = 0
-    do {
-      const carta = pedirCarta()
-      const turnoComputadora = puntosJugadores.length - 1
-      puntosComputadora = acumularPuntos(carta, turnoComputadora) //El útlimo jugador siempre será la computadora
-      crearCarta(carta, turnoComputadora)
-
-      if (puntosMinimos > 21) {
-        break
-      }
-    } while (puntosComputadora <= puntosMinimos && puntosMinimos <= 21)
+  const determinarGanador = () => {
+    const [puntosMinimos, puntosComputadora] = puntosJugadores // Desestructurando
 
     setTimeout(() => {
       if (puntosMinimos === puntosComputadora) {
@@ -91,6 +96,19 @@
         alert('Computadora gana')
       }
     }, 100)
+  }
+
+  const turnoComputadora = (puntosMinimos) => {
+    let puntosComputadora = 0
+
+    do {
+      const carta = pedirCarta()
+      const turnoComputadora = puntosJugadores.length - 1
+      puntosComputadora = acumularPuntos(carta, turnoComputadora) //El útlimo jugador siempre será la computadora
+      crearCarta(carta, turnoComputadora)
+    } while (puntosComputadora <= puntosMinimos && puntosMinimos <= 21)
+
+    determinarGanador()
   }
 
   // Eventos
@@ -114,21 +132,12 @@
   btnDetener.addEventListener('click', () => {
     btnPedir.disabled = true
     btnDetener.disabled = true
-    turnoComputadora(puntosJugador)
+    turnoComputadora(puntosJugadores[0])
   })
 
   btnNuevo.addEventListener('click', () => {
-    console.clear()
     inicializarJuego()
-
-    // puntosJugador = 0
-    // puntosComputadora = 0
-    // btnPedir.disabled = false
-    // btnDetener.disabled = false
-    // puntosHTML[0].innerText = 0
-    // puntosHTML[1].innerText = 0
-    // divJugadorCartas.innerHTML = ''
-    // divComputadoraCartas.innerHTML = ''
-    // crearBaraja()
   })
+
+  return
 })()
