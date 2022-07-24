@@ -1,11 +1,11 @@
-;(() => {
-  ;('use strict')
+const juego = (() => {
+  'use strict'
 
   let baraja = []
   const tipos = ['C', 'D', 'H', 'S'],
     letras = ['J', 'Q', 'K', 'A']
 
-  let puntosJugadores = [] // El último jugador siempre será la computadora
+  let puntosJugadores = []
 
   // Referencia del HTML
   const btnPedir = document.querySelector('#btn-pedir'),
@@ -28,15 +28,8 @@
 
     btnPedir.disabled = false
     btnDetener.disabled = false
-
-    // puntosJugador = 0
-    // puntosComputadora = 0
-    // divJugadorCartas.innerHTML = ''
-    // divComputadoraCartas.innerHTML = ''
-    // crearBaraja()
   }
 
-  // Esta función crea la baraja 'barajeada'
   const crearBaraja = () => {
     // Se reinicializa la baraja
     baraja = []
@@ -104,7 +97,7 @@
     do {
       const carta = pedirCarta()
       const turnoComputadora = puntosJugadores.length - 1
-      puntosComputadora = acumularPuntos(carta, turnoComputadora) //El útlimo jugador siempre será la computadora
+      puntosComputadora = acumularPuntos(carta, turnoComputadora)
       crearCarta(carta, turnoComputadora)
     } while (puntosComputadora <= puntosMinimos && puntosMinimos <= 21)
 
@@ -139,5 +132,6 @@
     inicializarJuego()
   })
 
-  return
+  // Haciendo público el método para inicializar el juego
+  return { nuevoJuego: inicializarJuego }
 })()
