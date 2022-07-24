@@ -1,32 +1,29 @@
 ;(() => {
-  ;('use strict') // Hace que el JS me obligue a declarar las variables de la manera correcta
-  // const personajes = ['Ana', 'Mercy']
-  // console.log({ personajes })
-
-  /**
-   * 2C = 2 de trebol (clubs)
-   * 2D = 2 de diamante (diamont)
-   * 2H = 2 de corazones (hearts)
-   * 2S = 2 de picas (spades)
-   */
+  ;('use strict')
 
   let baraja = []
-  const tipos = ['C', 'D', 'H', 'S']
-  const letras = ['J', 'Q', 'K', 'A']
+  const tipos = ['C', 'D', 'H', 'S'],
+    letras = ['J', 'Q', 'K', 'A']
 
-  let puntosJugador = 0
-  let puntosComputadora = 0
+  let puntosJugador = 0,
+    puntosComputadora = 0
 
   // Referencia del HTML
-  const btnPedir = document.querySelector('#btn-pedir')
-  const btnDetener = document.querySelector('#btn-detener')
-  const btnNuevo = document.querySelector('#btn-nuevo')
-  const puntosHTML = document.querySelectorAll('small')
-  const divJugadorCartas = document.querySelector('#jugador-cartas')
-  const divComputadoraCartas = document.querySelector('#computadora-cartas')
+  const btnPedir = document.querySelector('#btn-pedir'),
+    btnDetener = document.querySelector('#btn-detener'),
+    btnNuevo = document.querySelector('#btn-nuevo'),
+    puntosHTML = document.querySelectorAll('small'),
+    divJugadorCartas = document.querySelector('#jugador-cartas'),
+    divComputadoraCartas = document.querySelector('#computadora-cartas')
+
+  const inicializarJuego = () => {
+    baraja = crearBaraja()
+  }
 
   // Esta función crea la baraja 'barajeada'
   const crearBaraja = () => {
+    // Se reinicializa la baraja
+    baraja = []
     // Se puebla el arreglo con los número y tipos de la baraja
     for (let i = 2; i <= 10; i++) {
       for (let tipo of tipos) {
@@ -39,35 +36,23 @@
         baraja.push(letra + tipo)
       }
     }
-
     // Se barajea la baraja
-    baraja = _.shuffle(baraja)
+    return _.shuffle(baraja)
   }
 
-  crearBaraja()
-
-  /**
-   *  Se soluciona el error del desborde del arreglo al eliminar cartas del mismo
-   *  y no modificar el número máximo posible del random
-   */
-  // Esta función pide una carta
   const pedirCarta = () => {
     const barajaTamanio = baraja.length
     if (barajaTamanio === 0) {
       throw 'No hay cartas en la baraja'
     }
-    const index = Math.floor(Math.random() * barajaTamanio)
-    const carta = baraja.splice(index, 1)[0]
-    return carta
+    return baraja.splice(Math.floor(Math.random() * barajaTamanio), 1)[0]
   }
 
-  // Esta función obtiene el valor de la carta
   const valorCarta = (carta) => {
     const valor = carta.substring(0, carta.length - 1)
     return isNaN(valor) ? (valor === 'A' ? 11 : 10) : Number(valor)
   }
 
-  // Turno de la computadora
   const turnoComputadora = (puntosMinimos) => {
     do {
       const carta = pedirCarta()
@@ -130,6 +115,8 @@
   })
 
   btnNuevo.addEventListener('click', () => {
+    inicializarJuego()
+
     puntosJugador = 0
     puntosComputadora = 0
     btnPedir.disabled = false
