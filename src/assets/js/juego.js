@@ -15,6 +15,7 @@ let puntosComputadora = 0
 // Referencia del HTML
 const btnPedir = document.querySelector('#btn-pedir')
 const btnDetener = document.querySelector('#btn-detener')
+const btnNuevo = document.querySelector('#btn-nuevo')
 const puntosHTML = document.querySelectorAll('small')
 const divJugadorCartas = document.querySelector('#jugador-cartas')
 const divComputadoraCartas = document.querySelector('#computadora-cartas')
@@ -78,6 +79,18 @@ const turnoComputadora = (puntosMinimos) => {
       break
     }
   } while (puntosComputadora <= puntosMinimos && puntosMinimos <= 21)
+
+  setTimeout(() => {
+    if (puntosMinimos === puntosComputadora) {
+      alert('Hubo empate')
+    } else if (puntosMinimos > 21) {
+      alert('Computadora gana')
+    } else if (puntosComputadora > 21) {
+      alert('Genial, ganaste')
+    } else {
+      alert('Computadora gana')
+    }
+  }, 100)
 }
 
 // Eventos
@@ -95,12 +108,12 @@ btnPedir.addEventListener('click', () => {
   if (puntosJugador > 21) {
     btnPedir.disabled = true
     btnDetener.disabled = true
-    console.warn('Lo siento, ya perdiste')
+    // console.warn('Lo siento, ya perdiste')
     turnoComputadora(puntosJugador)
   } else if (puntosJugador === 21) {
     btnPedir.disabled = true
     btnDetener.disabled = true
-    console.warn('21, Genial')
+    // console.warn('21, Genial')
     turnoComputadora(puntosJugador)
   }
 })
@@ -109,4 +122,17 @@ btnDetener.addEventListener('click', () => {
   btnPedir.disabled = true
   btnDetener.disabled = true
   turnoComputadora(puntosJugador)
+})
+
+btnNuevo.addEventListener('click', () => {
+  puntosJugador = 0
+  puntosComputadora = 0
+  btnPedir.disabled = false
+  btnDetener.disabled = false
+  puntosHTML[0].innerText = 0
+  puntosHTML[1].innerText = 0
+  divJugadorCartas.innerHTML = ''
+  divComputadoraCartas.innerHTML = ''
+  console.clear()
+  crearBaraja()
 })
