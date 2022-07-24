@@ -5,19 +5,20 @@
   const tipos = ['C', 'D', 'H', 'S'],
     letras = ['J', 'Q', 'K', 'A']
 
-  let puntosJugador = 0,
-    puntosComputadora = 0
+  const puntosJugadores = [] // El último jugador siempre será la computadora
 
   // Referencia del HTML
   const btnPedir = document.querySelector('#btn-pedir'),
     btnDetener = document.querySelector('#btn-detener'),
     btnNuevo = document.querySelector('#btn-nuevo'),
     puntosHTML = document.querySelectorAll('small'),
-    divJugadorCartas = document.querySelector('#jugador-cartas'),
-    divComputadoraCartas = document.querySelector('#computadora-cartas')
+    divCartasJugadores = document.querySelectorAll('.divCartas')
 
-  const inicializarJuego = () => {
+  const inicializarJuego = (numJugadores = 2) => {
     baraja = crearBaraja()
+    for (let i = 0; i < numJugadores; i++) {
+      puntosJugadores.push(0)
+    }
   }
 
   // Esta función crea la baraja 'barajeada'
@@ -53,17 +54,26 @@
     return isNaN(valor) ? (valor === 'A' ? 11 : 10) : Number(valor)
   }
 
+  const acumularPuntos = (carta, turno) => {
+    puntosJugadores[turno] += valorCarta(carta)
+    puntosHTML[turno].innerText = puntosJugadores[turno]
+    return puntosJugadores[turno]
+  }
+
+  const crearCarta = (carta, turno) => {
+    const imgCarta = document.createElement('img')
+    imgCarta.src = `assets/cartas/${carta}.png`
+    imgCarta.classList.add('carta')
+    divCartasJugadores[turno].append(imgCarta)
+  }
+
   const turnoComputadora = (puntosMinimos) => {
+    let puntosComputadora = 0
     do {
       const carta = pedirCarta()
-      puntosComputadora += valorCarta(carta)
-      puntosHTML[1].innerText = puntosComputadora
-      // console.log(smallPuntajeJugador.innerText)
-
-      const imgCarta = document.createElement('img')
-      imgCarta.src = `assets/cartas/${carta}.png`
-      imgCarta.classList.add('carta')
-      divComputadoraCartas.append(imgCarta)
+      const turnoComputadora = puntosJugadores.length - 1
+      puntosComputadora = acumularPuntos(carta, turnoComputadora) //El útlimo jugador siempre será la computadora
+      crearCarta(carta, turnoComputadora)
 
       if (puntosMinimos > 21) {
         break
@@ -86,24 +96,17 @@
   // Eventos
   btnPedir.addEventListener('click', () => {
     const carta = pedirCarta()
-    puntosJugador += valorCarta(carta)
-    puntosHTML[0].innerText = puntosJugador
-    // console.log(smallPuntajeJugador.innerText)
+    const puntosJugador = acumularPuntos(carta, 0)
 
-    const imgCarta = document.createElement('img')
-    imgCarta.src = `assets/cartas/${carta}.png`
-    imgCarta.classList.add('carta')
-    divJugadorCartas.append(imgCarta)
+    crearCarta(carta, 0)
 
     if (puntosJugador > 21) {
       btnPedir.disabled = true
       btnDetener.disabled = true
-      // console.warn('Lo siento, ya perdiste')
       turnoComputadora(puntosJugador)
     } else if (puntosJugador === 21) {
       btnPedir.disabled = true
       btnDetener.disabled = true
-      // console.warn('21, Genial')
       turnoComputadora(puntosJugador)
     }
   })
@@ -115,17 +118,17 @@
   })
 
   btnNuevo.addEventListener('click', () => {
+    console.clear()
     inicializarJuego()
 
-    puntosJugador = 0
-    puntosComputadora = 0
-    btnPedir.disabled = false
-    btnDetener.disabled = false
-    puntosHTML[0].innerText = 0
-    puntosHTML[1].innerText = 0
-    divJugadorCartas.innerHTML = ''
-    divComputadoraCartas.innerHTML = ''
-    console.clear()
-    crearBaraja()
+    // puntosJugador = 0
+    // puntosComputadora = 0
+    // btnPedir.disabled = false
+    // btnDetener.disabled = false
+    // puntosHTML[0].innerText = 0
+    // puntosHTML[1].innerText = 0
+    // divJugadorCartas.innerHTML = ''
+    // divComputadoraCartas.innerHTML = ''
+    // crearBaraja()
   })
 })()
